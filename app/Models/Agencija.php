@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Agencija;
 
 class Agencija extends Model
 {
     use HasFactory;
 
+    protected $table='agencija';
 
 
     protected $fillable = [
