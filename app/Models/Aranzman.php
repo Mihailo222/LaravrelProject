@@ -9,6 +9,9 @@ class Aranzman extends Model
 {
     use HasFactory;
 
+
+    protected $table='aranzman';
+
     protected $fillable = [
         'cena',	'br_mesta',	'datum','prevoz',	
     ];
