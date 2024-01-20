@@ -10,8 +10,7 @@ use App\Http\Resources\AranzmanResource;
 
 use App\Http\Resources\AgencijaResource;
 
-
-
+use Illuminate\Support\Facades\Validator;
 class AranzmanController extends Controller
 {
     /**
@@ -43,7 +42,33 @@ class AranzmanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $validator=Validator::make($request->all(),[
+        'prevoz'=>'required|string|max:100',
+        'destinacija'=>'required|string|max:100',
+        'cena'=>'required',
+        'br_mesta'=>'required',
+        'agencija_id'=>'required',
+        'datum'=>'required' ]);
+      
+        if($validator->fails())
+              return response()->json($validator->errors());
+  
+  
+            $user = $request->user();
+       $aranzman=Aranzman::create([
+  
+          'prevoz'=>$request->prevoz,
+          'destinacija'=>$request->destinacija,
+          'cena'=>$request->cena,
+          'br_mesta'=>$request->br_mesta,
+          'datum'=>$request->datum,
+          'agencija_id'=>$request->agencija_id,
+           'user_id'=>$user->user_id
+  
+       ]);
+
+       return response()->json(['Aranzman uspesno kreiran.', new AranzmanResource($aranzman)]);
+
     }
 
     /**
@@ -88,6 +113,6 @@ class AranzmanController extends Controller
      */
     public function destroy(Aranzman $aranzman)
     {
-        //
+         return response()->json('Aranzman obrisan uspesno.');
     }
 }
