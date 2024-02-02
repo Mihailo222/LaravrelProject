@@ -1,7 +1,8 @@
 <?php
 
 namespace Database\Factories;
-
+use \App\Models\Agencija;
+use \App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,18 @@ class AranzmanFactory extends Factory
     public function definition()
     {
         return [
-            //
+          
+           
+            'cena' => $this->faker->randomFloat(2, 100, 1000),
+            'br_mesta' => $this->faker->randomNumber(2),
+            'datum' => $this->faker->date,
+            'prevoz' => $this->faker->word,
+            'destinacija' => $this->faker->word,
+            'user_id' => User::factory(),
+            'agencija_id' => Agencija::factory(),
+
+
+        
         ];
     }
 }
