@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgencijaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AranzmanController;
-
 use App\Http\Controllers\API\AuthController;
 
 /*
@@ -21,51 +20,53 @@ use App\Http\Controllers\API\AuthController;
 
 
 
-//OVO SVE RADI
-Route::get('/agencije', [AgencijaController::class, 'index']);
-Route::get('agencija/{id}', [AgencijaController::class, 'show']);
-Route::put('azuriraj_agenciju/{id}', [AgencijaController::class, 'update']);
-Route::post('sacuvaj_agenciju', [AgencijaController::class, 'store']);
 
 
+// NEULOGOVANI USER
 
-Route::get('/users', [UserController::class, 'index']);
-//************************************
+//NEULOGOVANI KORISNIK SME DA VIDI SAMO AGENCIJE KOJE VRSE USLUGE
+//mozda mi je najbolje da admin moze da azurira sve agencije i da ih cuva
 
-//resource rute
-Route::resource('aranzmani', AranzmanController::class); //rutiranje preko kontrolera
 
-//registracija
+Route::resource('/agencije', AgencijaController::class); //resource ruta svih agencija koje usluzuju
+Route::get('agencija/{id}', [AgencijaController::class,'show']); // resource ruta neke agencije
+//0. login and register rute za usera i admina
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 
 
+
+
+
+//ADMIN
+Route::group(['middleware'=>['auth:sanctum', 'admin']], function () {
+
+//hocu da samo admin sme da vidi sve usere
+Route::resource('/users', UserController::class); //resource ruta svih usera koje usluzuju
+
+Route::get('user/{id}', [UserController::class, 'show']); // resource ruta nekog usera
+//azuriranje i cuvanje agencija sme da vrsi samo admin
+Route::put('azuriraj_agenciju/{id}', [AgencijaController::class, 'update']);
+Route::post('sacuvaj_agenciju', [AgencijaController::class, 'store']);
+
+
+});
+
+
+
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    //1. profil usera
     Route::get('/profile', function(Request $request) {
         return auth()->user();
     });
+    //2. vraca aranzmane samo ulogovanog usera
+    Route::get('moji_aranzmani',[AranzmanController::class,'index']); //redirect na login putanju neulogovanog usera!! 
     
-    Route::resource('aranzmani', AranzmanController::class)->only(['store','destroy']);
+    //3. mogucnost zakazivanja novog aranzmana
+   Route::post('aranzmani', [AranzmanController::class, 'store']);
+
+    //4. logout usera
     Route::post('/logout', [AuthController::class, 'logout']);
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Route::get('/users', [UserController::class, 'index']);
-//************************************
-
-//resource rute
-Route::resource('aranzmani', AranzmanController::class); //rutiranje preko kontrolera
