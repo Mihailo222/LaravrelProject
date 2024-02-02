@@ -14,8 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users=User::all();
-        return response()->json(['data' => $users]);
+       $users=User::all();
+        return UserResource::collection($users);
     }
 
     /**
@@ -45,9 +45,18 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($id)
     {
-        //
+        
+        $user=User::find($id);
+
+
+
+
+
+        if(is_null($user))
+            return response()->json('Korisnik nije pronadjena. ', 404);
+        return new UserResource($user);
     }
 
     /**
